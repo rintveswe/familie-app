@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>Familie App</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --accent: #2ecc8e;
+    --accent2: #26b87e;
+    --rino: #2ecc8e;
+    --iselin: #e67e22;
+    --fia: #9b59b6;
+    --rakel: #e91e63;
+    --hugo: #3498db;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  .user-header {
+    background: var(--surface);
+    border-radius: 20px;
+    margin: 12px 12px 8px;
+    padding: 18px 20px 14px;
+    position: relative;
+  }
+  .user-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .bytt-btn {
+    position: absolute; top: 18px; right: 18px;
+    background: none; border: none; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; padding: 4px 8px;
+  }
+  .user-bar { height: 3px; border-radius: 2px; margin-top: 10px; background: var(--accent); transition: background 0.3s; }
+  .sync-status {
+    font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 5px;
+  }
+  .sync-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s;
+  }
+  .sync-dot.ok { background: var(--accent); }
+  .sync-dot.syncing { background: #f39c12; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 100; align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    background: var(--surface); border-radius: 24px 24px 0 0;
+    width: 100%; max-width: 480px; padding: 24px 20px 40px;
+  }
+  .modal-title { font-size: 12px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .user-option {
+    display: flex; align-items: center; gap: 14px; padding: 14px 0;
+    border-bottom: 1px solid var(--border); cursor: pointer;
+    background: none; border-left: none; border-right: none; border-top: none; width: 100%; text-align: left;
+  }
+  .user-option:last-child { border-bottom: none; }
+  .user-dot { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #000; flex-shrink: 0; }
+  .user-option-name { font-size: 18px; font-weight: 600; color: var(--text); }
+
+  .section { background: var(--surface); border-radius: 20px; margin: 8px 12px; overflow: hidden; }
+  .section-header { display: flex; align-items: center; gap: 14px; padding: 16px 18px; cursor: pointer; user-select: none; }
+  .section-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .section-title { font-size: 17px; font-weight: 700; flex: 1; }
+  .section-sub { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .badge { background: var(--accent); color: #000; font-size: 13px; font-weight: 700; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+  .section-body { display: none; padding: 0 14px 16px; border-top: 1px solid var(--border); }
+  .section-body.open { display: block; }
+
+  .input-row { display: flex; gap: 8px; margin-bottom: 10px; padding-top: 14px; }
+  .inp { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; }
+  .inp::placeholder { color: var(--muted); }
+  .inp:focus { border-color: var(--accent); }
+  .btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 12px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn-ghost { background: none; color: var(--muted); border: none; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; padding: 4px 0; }
+  .actions-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: center; }
+
+  .shop-item { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+  .shop-item:last-child { border-bottom: none; }
+  .shop-cb { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .shop-cb.checked { background: var(--accent); border-color: var(--accent); }
+  .shop-cb.checked::after { content: '✓'; color: #000; font-size: 14px; font-weight: 700; }
+  .shop-label { flex: 1; font-size: 16px; font-weight: 500; transition: all 0.2s; }
+  .shop-label.done { text-decoration: line-through; color: var(--muted); }
+  .user-tag { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #000; }
+  .shop-del { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; line-height: 1; }
+  .focused-mode { background: var(--surface2); border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--muted); margin-top: 8px; cursor: pointer; text-align: center; }
+
+  .event-item { padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
+  .event-item:last-child { border-bottom: none; }
+  .event-time-col { min-width: 70px; }
+  .event-date-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .event-time-label { font-size: 13px; color: var(--accent); font-weight: 600; }
+  .event-title { font-size: 15px; font-weight: 600; flex: 1; }
+  .event-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px; }
+  .cal-inputs { padding-top: 14px; }
+  .cal-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 13px; color: var(--muted); }
+  .cal-row label { min-width: 28px; }
+  .inp-sm { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
+  .inp-sm:focus { border-color: var(--accent); }
+
+  .week-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 10px; }
+  .week-label { font-size: 15px; font-weight: 600; color: var(--muted); }
+  .week-btn { background: var(--surface2); border: none; color: var(--text); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 18px; }
+  .day-item { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+  .day-label { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+  .day-inp { background: none; border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; width: 100%; outline: none; padding: 0; }
+  .day-inp::placeholder { color: #444; font-weight: 400; }
+
+  .note-item { background: var(--surface2); border-radius: 12px; padding: 14px; margin-bottom: 8px; margin-top: 12px; }
+  .note-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .note-text { font-size: 15px; line-height: 1.5; }
+  .note-del { background: none; border: none; color: var(--muted); cursor: pointer; float: right; font-size: 16px; margin-left: 8px; margin-top: -2px; }
+  .notes-area { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; width: 100%; min-height: 100px; resize: vertical; outline: none; margin-top: 14px; display: block; }
+  .notes-area:focus { border-color: var(--accent); }
+  .notes-area::placeholder { color: #444; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 20px; font-size: 14px; font-weight: 500; z-index: 200; transition: transform 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.5); white-space: nowrap; max-width: 90vw; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--accent); color: var(--accent); }
+  .toast.error { border-color: #e74c3c; color: #e74c3c; }
+
+  .focus-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 150; padding: 20px; flex-direction: column; }
+  .focus-overlay.open { display: flex; }
+  .focus-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .focus-title { font-size: 22px; font-weight: 700; }
+  .focus-close { background: var(--surface2); border: none; color: var(--text); border-radius: 10px; padding: 8px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; }
+  .focus-list { flex: 1; overflow-y: auto; }
+  .focus-item { display: flex; align-items: center; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .focus-cb { width: 32px; height: 32px; border-radius: 10px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .focus-cb.checked { background: var(--accent); border-color: var(--accent); }
+  .focus-cb.checked::after { content: '✓'; color: #000; font-size: 16px; font-weight: 800; }
+  .focus-label { font-size: 20px; font-weight: 600; }
+  .focus-label.done { text-decoration: line-through; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="user-header" id="userHeader">
+  <button class="bytt-btn" onclick="openUserModal()">Bytt bruker</button>
+  <div class="user-name" id="displayName">Tvete Swensen</div>
+  <div class="user-bar" id="userBar"></div>
+  <div class="sync-status">
+    <div class="sync-dot" id="syncDot"></div>
+    <span id="syncText">Laster...</span>
+  </div>
+</div>
+
+<div class="modal-overlay" id="userModal" onclick="closeUserModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">Velg bruker</div>
+    <button class="user-option" onclick="setUser('Rino')">
+      <div class="user-dot" style="background:var(--rino)">R</div>
+      <div class="user-option-name">Rino</div>
+    </button>
+    <button class="user-option" onclick="setUser('Iselin')">
+      <div class="user-dot" style="background:var(--iselin)">I</div>
+      <div class="user-option-name">Iselin</div>
+    </button>
+    <button class="user-option" onclick="setUser('Fia')">
+      <div class="user-dot" style="background:var(--fia)">F</div>
+      <div class="user-option-name">Fia</div>
+    </button>
+    <button class="user-option" onclick="setUser('Rakel')">
+      <div class="user-dot" style="background:var(--rakel)">R</div>
+      <div class="user-option-name">Rakel</div>
+    </button>
+    <button class="user-option" onclick="setUser('Hugo')">
+      <div class="user-dot" style="background:var(--hugo)">H</div>
+      <div class="user-option-name">Hugo</div>
+    </button>
+  </div>
+</div>
+
+<!-- SHOPPING LIST -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection('shopping')">
+    <div class="section-icon" style="background:#1e2d26">🛒</div>
+    <div>
+      <div class="section-title">Handleliste</div>
+      <div class="section-sub" id="shopSub">Trykk for å åpne</div>
+    </div>
+    <div class="badge" id="shopBadge" style="display:none">0</div>
+  </div>
+  <div class="section-body" id="shopping">
+    <div class="input-row">
+      <input class="inp" id="shopInput" type="text" placeholder="Skriv inn vare" onkeydown="if(event.key==='Enter')addShopItem()">
+      <button class="btn" onclick="addShopItem()">Legg til</button>
+    </div>
+    <div class="actions-row">
+      <button class="btn-ghost" onclick="clearDoneShop()">Slett ferdige</button>
+    </div>
+    <div id="shopList"></div>
+    <div class="focused-mode" onclick="openFocusMode()">🎯 Fokusert handletur</div>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection('calendar')">
+    <div class="section-icon" style="background:#2d1e1e; font-size:18px">📅</div>
+    <div>
+      <div class="section-title">Kalender</div>
+      <div class="section-sub" id="calSub">Trykk for å åpne</div>
+    </div>
+  </div>
+  <div class="section-body" id="calendar">
+    <div class="cal-inputs">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Bruker: <span id="calUser">–</span></div>
+      <input class="inp" id="calTitle" type="text" placeholder="Skriv inn hendelse" style="margin-bottom:8px;width:100%">
+      <div class="cal-row">
+        <label>Fra</label>
+        <input class="inp-sm" type="date" id="calFrom" />
+        <input class="inp-sm" type="time" id="calTime" value="12:00" />
+      </div>
+      <div class="cal-row">
+        <label>Til</label>
+        <input class="inp-sm" type="date" id="calTo" />
+        <input class="inp-sm" type="time" id="calToTime" />
+      </div>
+      <button class="btn" style="width:100%;margin-top:6px" onclick="addCalEvent()">Legg til</button>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;padding:8px 12px;background:var(--surface2);border-radius:8px">
+        ℹ️ Varsler støttes ikke i denne appen — bruk telefonens egen kalender for påminnelser.
+      </div>
+    </div>
+    <div id="calList" style="margin-top:8px"></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:10px;padding:6px 0">Arkiveres automatisk når tid er passert · <span style="color:var(--accent);cursor:pointer" onclick="toggleArchive()">Vis arkiv</span></div>
+    <div id="archiveList" style="display:none;margin-top:6px"></div>
+  </div>
+</div>
+
+<!-- DINNER PLAN -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection('dinner')">
+    <div class="section-icon" style="background:#1e1e2d">🍽️</div>
+    <div>
+      <div class="section-title">Middagsplan</div>
+      <div class="section-sub" id="dinnerSub">Trykk for å åpne</div>
+    </div>
+    <div class="badge" id="dinnerBadge" style="display:none">0</div>
+  </div>
+  <div class="section-body" id="dinner">
+    <div class="week-nav">
+      <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+      <div class="week-label" id="weekLabel">Uke –</div>
+      <button class="week-btn" onclick="changeWeek(1)">›</button>
+    </div>
+    <div id="dinnerDays"></div>
+  </div>
+</div>
+
+<!-- NOTES -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection('notes')">
+    <div class="section-icon" style="background:#2d2d1e; font-size:18px">📝</div>
+    <div>
+      <div class="section-title">Notat</div>
+      <div class="section-sub" id="notesSub">Trykk for å åpne</div>
+    </div>
+  </div>
+  <div class="section-body" id="notes">
+    <div style="font-size:12px;color:var(--muted);padding-top:12px">Bruker: <span id="notesUser">–</span></div>
+    <textarea class="notes-area" id="noteArea" placeholder="Skriv hva som helst her..."></textarea>
+    <button class="btn" style="width:100%;margin-top:8px" onclick="addNote()">Legg til notat</button>
+    <div id="noteList"></div>
+  </div>
+</div>
+
+<!-- FOCUS MODE -->
+<div class="focus-overlay" id="focusOverlay">
+  <div class="focus-header">
+    <div class="focus-title">🎯 Handletur</div>
+    <button class="focus-close" onclick="closeFocusMode()">Lukk</button>
+  </div>
+  <div class="focus-list" id="focusList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const USER_COLORS = {
+  Rino: '#2ecc8e', Iselin: '#e67e22', Fia: '#9b59b6', Rakel: '#e91e63', Hugo: '#3498db'
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  shopping: [],
+  calendar: [],
+  dinner: {},
+  notes: []
+};
+let currentUser = 'Rino';
+let syncInterval = null;
+
+// ─── SYNC STATUS ─────────────────────────────────────────────────────────────
+function setSyncStatus(status, text) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  dot.className = 'sync-dot ' + status;
+  txt.textContent = text;
+}
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+// Lagrer brukervalg lokalt (ikke delt — hver person velger sin egen bruker)
+function saveLocalUser() {
+  try { localStorage.setItem('familieapp_user', currentUser); } catch(e){}
+}
+function loadLocalUser() {
+  try { return localStorage.getItem('familieapp_user') || 'Rino'; } catch(e){ return 'Rino'; }
+}
+
+// Delt data via window.storage
+async function saveShared() {
+  setSyncStatus('syncing', 'Lagrer...');
+  try {
+    await window.storage.set('shopping', JSON.stringify(state.shopping), true);
+    await window.storage.set('calendar', JSON.stringify(state.calendar), true);
+    await window.storage.set('dinner', JSON.stringify(state.dinner), true);
+    await window.storage.set('notes', JSON.stringify(state.notes), true);
+    setSyncStatus('ok', 'Synkronisert');
+  } catch(e) {
+    setSyncStatus('', 'Lagringsfeil');
+  }
+}
+
+async function loadShared() {
+  setSyncStatus('syncing', 'Henter data...');
+  try {
+    const shopping = await window.storage.get('shopping', true).catch(() => null);
+    const calendar = await window.storage.get('calendar', true).catch(() => null);
+    const dinner   = await window.storage.get('dinner', true).catch(() => null);
+    const notes    = await window.storage.get('notes', true).catch(() => null);
+
+    if (shopping) state.shopping = JSON.parse(shopping.value);
+    if (calendar) state.calendar = JSON.parse(calendar.value);
+    if (dinner)   state.dinner   = JSON.parse(dinner.value);
+    if (notes)    state.notes    = JSON.parse(notes.value);
+
+    setSyncStatus('ok', 'Synkronisert');
+  } catch(e) {
+    setSyncStatus('', 'Kunne ikke laste data');
+  }
+}
+
+// Poll for changes every 15 seconds
+async function pollForChanges() {
+  try {
+    const shopping = await window.storage.get('shopping', true).catch(() => null);
+    const calendar = await window.storage.get('calendar', true).catch(() => null);
+    const dinner   = await window.storage.get('dinner', true).catch(() => null);
+    const notes    = await window.storage.get('notes', true).catch(() => null);
+
+    let changed = false;
+    if (shopping) { const v = JSON.parse(shopping.value); if (JSON.stringify(v) !== JSON.stringify(state.shopping)) { state.shopping = v; changed = true; } }
+    if (calendar) { const v = JSON.parse(calendar.value); if (JSON.stringify(v) !== JSON.stringify(state.calendar)) { state.calendar = v; changed = true; } }
+    if (dinner)   { const v = JSON.parse(dinner.value);   if (JSON.stringify(v) !== JSON.stringify(state.dinner))   { state.dinner = v;   changed = true; } }
+    if (notes)    { const v = JSON.parse(notes.value);    if (JSON.stringify(v) !== JSON.stringify(state.notes))    { state.notes = v;    changed = true; } }
+
+    if (changed) {
+      renderShopping(); renderCalendar(); renderDinner(); renderNotes();
+      setSyncStatus('ok', 'Oppdatert');
+    }
+  } catch(e) {}
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ─── USER ────────────────────────────────────────────────────────────────────
+function setUser(name) {
+  currentUser = name;
+  saveLocalUser();
+  renderUser();
+  closeUserModal();
+}
+function renderUser() {
+  document.getElementById('userBar').style.background = USER_COLORS[currentUser];
+  document.getElementById('calUser').textContent = currentUser;
+  document.getElementById('notesUser').textContent = currentUser;
+}
+function openUserModal() { document.getElementById('userModal').classList.add('open'); }
+function closeUserModal(e) {
+  if (!e || e.target === document.getElementById('userModal'))
+    document.getElementById('userModal').classList.remove('open');
+}
+
+// ─── SECTION TOGGLE ──────────────────────────────────────────────────────────
+function toggleSection(id) {
+  const body = document.getElementById(id);
+  const isOpen = body.classList.contains('open');
+  const subs = { shopping: 'shopSub', calendar: 'calSub', dinner: 'dinnerSub', notes: 'notesSub' };
+  body.classList.toggle('open', !isOpen);
+  document.getElementById(subs[id]).textContent = isOpen ? 'Trykk for å åpne' : 'Trykk for å lukke';
+}
+
+// ─── SHOPPING LIST ────────────────────────────────────────────────────────────
+async function addShopItem() {
+  const inp = document.getElementById('shopInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  state.shopping.push({ id: Date.now(), label: val, done: false, user: currentUser });
+  inp.value = '';
+  renderShopping();
+  await saveShared();
+}
+async function toggleShopItem(id) {
+  const item = state.shopping.find(i => i.id === id);
+  if (item) item.done = !item.done;
+  renderShopping();
+  await saveShared();
+}
+async function deleteShopItem(id) {
+  state.shopping = state.shopping.filter(i => i.id !== id);
+  renderShopping();
+  await saveShared();
+}
+async function clearDoneShop() {
+  state.shopping = state.shopping.filter(i => !i.done);
+  renderShopping();
+  await saveShared();
+}
+function renderShopping() {
+  const list = document.getElementById('shopList');
+  const pending = state.shopping.filter(i => !i.done);
+  const badge = document.getElementById('shopBadge');
+  badge.textContent = pending.length;
+  badge.style.display = pending.length > 0 ? 'flex' : 'none';
+  list.innerHTML = state.shopping.map(item => `
+    <div class="shop-item">
+      <div class="shop-cb ${item.done ? 'checked' : ''}" onclick="toggleShopItem(${item.id})"></div>
+      <div class="shop-label ${item.done ? 'done' : ''}">${escHtml(item.label)}</div>
+      <span class="user-tag" style="background:${USER_COLORS[item.user] || '#888'}">${item.user}</span>
+      <button class="shop-del" onclick="deleteShopItem(${item.id})">×</button>
+    </div>
+  `).join('');
+}
+
+// ─── FOCUS MODE ──────────────────────────────────────────────────────────────
+function openFocusMode() { document.getElementById('focusOverlay').classList.add('open'); renderFocusList(); }
+function closeFocusMode() { document.getElementById('focusOverlay').classList.remove('open'); }
+function renderFocusList() {
+  const list = document.getElementById('focusList');
+  const items = state.shopping.filter(i => !i.done);
+  list.innerHTML = items.length === 0
+    ? '<div style="color:var(--muted);text-align:center;padding:40px">Alt er handlet! 🎉</div>'
+    : items.map(item => `
+      <div class="focus-item" onclick="toggleShopItem(${item.id}).then(()=>renderFocusList())">
+        <div class="focus-cb"></div>
+        <div class="focus-label">${escHtml(item.label)}</div>
+        <span class="user-tag" style="background:${USER_COLORS[item.user] || '#888'}">${item.user}</span>
+      </div>
+    `).join('');
+}
+
+// ─── CALENDAR ────────────────────────────────────────────────────────────────
+async function addCalEvent() {
+  const title = document.getElementById('calTitle').value.trim();
+  const from = document.getElementById('calFrom').value;
+  const time = document.getElementById('calTime').value;
+  if (!title) return;
+  state.calendar.push({
+    id: Date.now(), title, from, time,
+    to: document.getElementById('calTo').value,
+    toTime: document.getElementById('calToTime').value,
+    user: currentUser, archived: false
+  });
+  document.getElementById('calTitle').value = '';
+  renderCalendar();
+  await saveShared();
+  showToast('Hendelse lagt til! 📅');
+}
+async function deleteCalEvent(id) {
+  state.calendar = state.calendar.filter(e => e.id !== id);
+  renderCalendar();
+  await saveShared();
+}
+function toggleArchive() {
+  const arch = document.getElementById('archiveList');
+  arch.style.display = arch.style.display === 'none' ? 'block' : 'none';
+}
+function renderCalendar() {
+  const now = new Date();
+  state.calendar.forEach(ev => {
+    if (ev.from && ev.time) {
+      const dt = new Date(`${ev.from}T${ev.time}`);
+      if (dt < now) ev.archived = true;
+    }
+  });
+  const active = state.calendar.filter(e => !e.archived).sort((a,b) =>
+    new Date(`${a.from}T${a.time}`) - new Date(`${b.from}T${b.time}`)
+  );
+  const archived = state.calendar.filter(e => e.archived);
+
+  document.getElementById('calList').innerHTML = active.length === 0
+    ? '<div style="color:var(--muted);font-size:13px;padding:8px 0">Ingen kommende hendelser</div>'
+    : active.map(ev => `
+      <div class="event-item">
+        <div class="event-time-col">
+          <div class="event-date-label">${formatDate(ev.from)}</div>
+          <div class="event-time-label">${ev.time || ''}</div>
+        </div>
+        <div class="event-title">${escHtml(ev.title)}</div>
+        <span class="user-tag" style="background:${USER_COLORS[ev.user] || '#888'};font-size:11px">${ev.user}</span>
+        <button class="event-del" onclick="deleteCalEvent(${ev.id})">×</button>
+      </div>
+    `).join('');
+
+  document.getElementById('archiveList').innerHTML = archived.length === 0
+    ? '<div style="color:var(--muted);font-size:13px">Ingen arkiverte hendelser</div>'
+    : archived.map(ev => `
+      <div class="event-item" style="opacity:0.5">
+        <div class="event-time-col">
+          <div class="event-date-label">${formatDate(ev.from)}</div>
+          <div class="event-time-label">${ev.time || ''}</div>
+        </div>
+        <div class="event-title" style="text-decoration:line-through">${escHtml(ev.title)}</div>
+        <button class="event-del" onclick="deleteCalEvent(${ev.id})">×</button>
+      </div>
+    `).join('');
+}
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  const days = ['Søn','Man','Tir','Ons','Tor','Fre','Lør'];
+  return `${days[d.getDay()]} ${d.getDate()}.${d.getMonth()+1}`;
+}
+
+// ─── DINNER ──────────────────────────────────────────────────────────────────
+let currentWeekOffset = 0;
+function getWeekNumber(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+}
+function getMondayOfWeek(offset) {
+  const now = new Date();
+  const day = now.getDay() || 7;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - day + 1 + offset * 7);
+  monday.setHours(0,0,0,0);
+  return monday;
+}
+function changeWeek(dir) { currentWeekOffset += dir; renderDinner(); }
+function getDinnerKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+function renderDinner() {
+  const monday = getMondayOfWeek(currentWeekOffset);
+  document.getElementById('weekLabel').textContent = `Uke ${getWeekNumber(monday)}`;
+  const dayNames = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
+  let html = ''; let filled = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const key = getDinnerKey(d);
+    const val = state.dinner[key] || '';
+    if (val) filled++;
+    html += `
+      <div class="day-item">
+        <div class="day-label">${dayNames[i]} ${d.getDate()}.${d.getMonth()+1}</div>
+        <input class="day-inp" type="text" placeholder="Skriv inn middag"
+          value="${escHtml(val)}"
+          onchange="saveDinner('${key}', this.value)"
+          oninput="saveDinner('${key}', this.value)">
+      </div>`;
+  }
+  document.getElementById('dinnerDays').innerHTML = html;
+  const badge = document.getElementById('dinnerBadge');
+  badge.textContent = filled;
+  badge.style.display = filled > 0 ? 'flex' : 'none';
+}
+let dinnerSaveTimer = null;
+function saveDinner(key, val) {
+  state.dinner[key] = val;
+  renderDinner();
+  // Debounce saves for dinner (typing)
+  clearTimeout(dinnerSaveTimer);
+  dinnerSaveTimer = setTimeout(() => saveShared(), 1500);
+}
+
+// ─── NOTES ────────────────────────────────────────────────────────────────────
+async function addNote() {
+  const area = document.getElementById('noteArea');
+  const text = area.value.trim();
+  if (!text) return;
+  state.notes.unshift({ id: Date.now(), text, user: currentUser, ts: new Date().toLocaleString('no') });
+  area.value = '';
+  renderNotes();
+  await saveShared();
+  showToast('Notat lagret! 📝');
+}
+async function deleteNote(id) {
+  state.notes = state.notes.filter(n => n.id !== id);
+  renderNotes();
+  await saveShared();
+}
+function renderNotes() {
+  document.getElementById('noteList').innerHTML = state.notes.map(n => `
+    <div class="note-item">
+      <div class="note-meta">
+        <button class="note-del" onclick="deleteNote(${n.id})">×</button>
+        <span class="user-tag" style="background:${USER_COLORS[n.user] || '#888'};margin-right:6px">${n.user}</span>
+        ${n.ts}
+      </div>
+      <div class="note-text">${escHtml(n.text)}</div>
+    </div>
+  `).join('');
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  currentUser = loadLocalUser();
+  document.getElementById('calFrom').value = new Date().toISOString().slice(0,10);
+  renderUser();
+
+  await loadShared();
+  renderShopping();
+  renderCalendar();
+  renderDinner();
+  renderNotes();
+
+  // Poll every 15 seconds for changes from other family members
+  syncInterval = setInterval(pollForChanges, 15000);
+}
+
+init();
+</script>
+</body>
+</html>
