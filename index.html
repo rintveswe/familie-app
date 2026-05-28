@@ -10,67 +10,29 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #1a1a1a;
-    --surface2: #222;
-    --border: #2a2a2a;
-    --text: #f0f0f0;
-    --muted: #888;
-    --accent: #2ecc8e;
-    --accent2: #26b87e;
-    --rino: #2ecc8e;
-    --iselin: #e67e22;
-    --fia: #9b59b6;
-    --rakel: #e91e63;
-    --hugo: #3498db;
+    --bg: #0a0a0a; --surface: #1a1a1a; --surface2: #222; --border: #2a2a2a;
+    --text: #f0f0f0; --muted: #888; --accent: #2ecc8e;
+    --rino: #2ecc8e; --iselin: #e67e22; --fia: #9b59b6; --rakel: #e91e63; --hugo: #3498db;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 40px;
-  }
-  .user-header {
-    background: var(--surface);
-    border-radius: 20px;
-    margin: 12px 12px 8px;
-    padding: 18px 20px 14px;
-    position: relative;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+
+  .user-header { background: var(--surface); border-radius: 20px; margin: 12px 12px 8px; padding: 18px 20px 14px; position: relative; }
   .user-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
-  .bytt-btn {
-    position: absolute; top: 18px; right: 18px;
-    background: none; border: none; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; padding: 4px 8px;
-  }
+  .bytt-btn { position: absolute; top: 18px; right: 18px; background: none; border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; padding: 4px 8px; }
   .user-bar { height: 3px; border-radius: 2px; margin-top: 10px; background: var(--accent); transition: background 0.3s; }
-  .sync-status {
-    font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 5px;
-  }
-  .sync-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s;
-  }
+  .sync-status { font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
   .sync-dot.ok { background: var(--accent); }
   .sync-dot.syncing { background: #f39c12; animation: pulse 1s infinite; }
+  .sync-dot.error { background: #e74c3c; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 100; align-items: flex-end; justify-content: center;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: flex-end; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal-sheet {
-    background: var(--surface); border-radius: 24px 24px 0 0;
-    width: 100%; max-width: 480px; padding: 24px 20px 40px;
-  }
+  .modal-sheet { background: var(--surface); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; padding: 24px 20px 40px; }
   .modal-title { font-size: 12px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .user-option {
-    display: flex; align-items: center; gap: 14px; padding: 14px 0;
-    border-bottom: 1px solid var(--border); cursor: pointer;
-    background: none; border-left: none; border-right: none; border-top: none; width: 100%; text-align: left;
-  }
+  .user-option { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; background: none; border-left: none; border-right: none; border-top: none; width: 100%; text-align: left; }
   .user-option:last-child { border-bottom: none; }
   .user-dot { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #000; flex-shrink: 0; }
   .user-option-name { font-size: 18px; font-weight: 600; color: var(--text); }
@@ -97,7 +59,7 @@
   .shop-cb { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
   .shop-cb.checked { background: var(--accent); border-color: var(--accent); }
   .shop-cb.checked::after { content: '✓'; color: #000; font-size: 14px; font-weight: 700; }
-  .shop-label { flex: 1; font-size: 16px; font-weight: 500; transition: all 0.2s; }
+  .shop-label { flex: 1; font-size: 16px; font-weight: 500; }
   .shop-label.done { text-decoration: line-through; color: var(--muted); }
   .user-tag { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #000; }
   .shop-del { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; line-height: 1; }
@@ -153,13 +115,13 @@
 </head>
 <body>
 
-<div class="user-header" id="userHeader">
+<div class="user-header">
   <button class="bytt-btn" onclick="openUserModal()">Bytt bruker</button>
-  <div class="user-name" id="displayName">Tvete Swensen</div>
+  <div class="user-name">Tvete Swensen</div>
   <div class="user-bar" id="userBar"></div>
   <div class="sync-status">
     <div class="sync-dot" id="syncDot"></div>
-    <span id="syncText">Laster...</span>
+    <span id="syncText">Kobler til...</span>
   </div>
 </div>
 
@@ -189,7 +151,6 @@
   </div>
 </div>
 
-<!-- SHOPPING LIST -->
 <div class="section">
   <div class="section-header" onclick="toggleSection('shopping')">
     <div class="section-icon" style="background:#1e2d26">🛒</div>
@@ -212,7 +173,6 @@
   </div>
 </div>
 
-<!-- CALENDAR -->
 <div class="section">
   <div class="section-header" onclick="toggleSection('calendar')">
     <div class="section-icon" style="background:#2d1e1e; font-size:18px">📅</div>
@@ -236,17 +196,15 @@
         <input class="inp-sm" type="time" id="calToTime" />
       </div>
       <button class="btn" style="width:100%;margin-top:6px" onclick="addCalEvent()">Legg til</button>
-      <div style="font-size:12px;color:var(--muted);margin-top:8px;padding:8px 12px;background:var(--surface2);border-radius:8px">
-        ℹ️ Varsler støttes ikke i denne appen — bruk telefonens egen kalender for påminnelser.
-      </div>
     </div>
     <div id="calList" style="margin-top:8px"></div>
-    <div style="font-size:12px;color:var(--muted);margin-top:10px;padding:6px 0">Arkiveres automatisk når tid er passert · <span style="color:var(--accent);cursor:pointer" onclick="toggleArchive()">Vis arkiv</span></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:10px;padding:6px 0">
+      Arkiveres automatisk når tid er passert · <span style="color:var(--accent);cursor:pointer" onclick="toggleArchive()">Vis arkiv</span>
+    </div>
     <div id="archiveList" style="display:none;margin-top:6px"></div>
   </div>
 </div>
 
-<!-- DINNER PLAN -->
 <div class="section">
   <div class="section-header" onclick="toggleSection('dinner')">
     <div class="section-icon" style="background:#1e1e2d">🍽️</div>
@@ -266,7 +224,6 @@
   </div>
 </div>
 
-<!-- NOTES -->
 <div class="section">
   <div class="section-header" onclick="toggleSection('notes')">
     <div class="section-icon" style="background:#2d2d1e; font-size:18px">📝</div>
@@ -283,7 +240,6 @@
   </div>
 </div>
 
-<!-- FOCUS MODE -->
 <div class="focus-overlay" id="focusOverlay">
   <div class="focus-header">
     <div class="focus-title">🎯 Handletur</div>
@@ -294,91 +250,72 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA6aG0KUmaDxLn5DYfvcOSgveKW_GE2Fjo",
+  authDomain: "familie-app-b54be.firebaseapp.com",
+  projectId: "familie-app-b54be",
+  storageBucket: "familie-app-b54be.firebasestorage.app",
+  messagingSenderId: "731973465930",
+  appId: "1:731973465930:web:fe7641cc71dfd8034bf3b3"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const USER_COLORS = {
   Rino: '#2ecc8e', Iselin: '#e67e22', Fia: '#9b59b6', Rakel: '#e91e63', Hugo: '#3498db'
 };
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let state = {
-  shopping: [],
-  calendar: [],
-  dinner: {},
-  notes: []
-};
+let state = { shopping: [], calendar: [], dinner: {}, notes: [] };
 let currentUser = 'Rino';
-let syncInterval = null;
+let dinnerSaveTimer = null;
+let currentWeekOffset = 0;
+let archiveVisible = false;
 
 // ─── SYNC STATUS ─────────────────────────────────────────────────────────────
 function setSyncStatus(status, text) {
-  const dot = document.getElementById('syncDot');
-  const txt = document.getElementById('syncText');
-  dot.className = 'sync-dot ' + status;
-  txt.textContent = text;
+  document.getElementById('syncDot').className = 'sync-dot ' + status;
+  document.getElementById('syncText').textContent = text;
 }
 
-// ─── STORAGE ─────────────────────────────────────────────────────────────────
-// Lagrer brukervalg lokalt (ikke delt — hver person velger sin egen bruker)
-function saveLocalUser() {
-  try { localStorage.setItem('familieapp_user', currentUser); } catch(e){}
-}
-function loadLocalUser() {
-  try { return localStorage.getItem('familieapp_user') || 'Rino'; } catch(e){ return 'Rino'; }
-}
+// ─── FIREBASE ────────────────────────────────────────────────────────────────
+const docRef = doc(db, 'familie', 'data');
 
-// Delt data via window.storage
-async function saveShared() {
+async function saveToFirebase() {
   setSyncStatus('syncing', 'Lagrer...');
   try {
-    await window.storage.set('shopping', JSON.stringify(state.shopping), true);
-    await window.storage.set('calendar', JSON.stringify(state.calendar), true);
-    await window.storage.set('dinner', JSON.stringify(state.dinner), true);
-    await window.storage.set('notes', JSON.stringify(state.notes), true);
+    await setDoc(docRef, state);
     setSyncStatus('ok', 'Synkronisert');
   } catch(e) {
-    setSyncStatus('', 'Lagringsfeil');
+    setSyncStatus('error', 'Lagringsfeil');
+    console.error(e);
   }
 }
 
-async function loadShared() {
-  setSyncStatus('syncing', 'Henter data...');
-  try {
-    const shopping = await window.storage.get('shopping', true).catch(() => null);
-    const calendar = await window.storage.get('calendar', true).catch(() => null);
-    const dinner   = await window.storage.get('dinner', true).catch(() => null);
-    const notes    = await window.storage.get('notes', true).catch(() => null);
-
-    if (shopping) state.shopping = JSON.parse(shopping.value);
-    if (calendar) state.calendar = JSON.parse(calendar.value);
-    if (dinner)   state.dinner   = JSON.parse(dinner.value);
-    if (notes)    state.notes    = JSON.parse(notes.value);
-
+// Real-time listener — oppdaterer alle enheter umiddelbart
+onSnapshot(docRef, (snap) => {
+  if (snap.exists()) {
+    const data = snap.data();
+    state.shopping = data.shopping || [];
+    state.calendar = data.calendar || [];
+    state.dinner   = data.dinner   || {};
+    state.notes    = data.notes    || [];
+    renderShopping();
+    renderCalendar();
+    renderDinner();
+    renderNotes();
     setSyncStatus('ok', 'Synkronisert');
-  } catch(e) {
-    setSyncStatus('', 'Kunne ikke laste data');
+  } else {
+    setSyncStatus('ok', 'Klar');
   }
-}
-
-// Poll for changes every 15 seconds
-async function pollForChanges() {
-  try {
-    const shopping = await window.storage.get('shopping', true).catch(() => null);
-    const calendar = await window.storage.get('calendar', true).catch(() => null);
-    const dinner   = await window.storage.get('dinner', true).catch(() => null);
-    const notes    = await window.storage.get('notes', true).catch(() => null);
-
-    let changed = false;
-    if (shopping) { const v = JSON.parse(shopping.value); if (JSON.stringify(v) !== JSON.stringify(state.shopping)) { state.shopping = v; changed = true; } }
-    if (calendar) { const v = JSON.parse(calendar.value); if (JSON.stringify(v) !== JSON.stringify(state.calendar)) { state.calendar = v; changed = true; } }
-    if (dinner)   { const v = JSON.parse(dinner.value);   if (JSON.stringify(v) !== JSON.stringify(state.dinner))   { state.dinner = v;   changed = true; } }
-    if (notes)    { const v = JSON.parse(notes.value);    if (JSON.stringify(v) !== JSON.stringify(state.notes))    { state.notes = v;    changed = true; } }
-
-    if (changed) {
-      renderShopping(); renderCalendar(); renderDinner(); renderNotes();
-      setSyncStatus('ok', 'Oppdatert');
-    }
-  } catch(e) {}
-}
+}, (err) => {
+  setSyncStatus('error', 'Tilkoblingsfeil');
+});
 
 // ─── TOAST ───────────────────────────────────────────────────────────────────
 function showToast(msg, type='success') {
@@ -389,58 +326,55 @@ function showToast(msg, type='success') {
 }
 
 // ─── USER ────────────────────────────────────────────────────────────────────
-function setUser(name) {
+window.setUser = function(name) {
   currentUser = name;
-  saveLocalUser();
-  renderUser();
-  closeUserModal();
-}
-function renderUser() {
-  document.getElementById('userBar').style.background = USER_COLORS[currentUser];
-  document.getElementById('calUser').textContent = currentUser;
-  document.getElementById('notesUser').textContent = currentUser;
-}
-function openUserModal() { document.getElementById('userModal').classList.add('open'); }
-function closeUserModal(e) {
-  if (!e || e.target === document.getElementById('userModal'))
+  try { localStorage.setItem('familieapp_user', name); } catch(e){}
+  document.getElementById('userBar').style.background = USER_COLORS[name];
+  document.getElementById('calUser').textContent = name;
+  document.getElementById('notesUser').textContent = name;
+  document.getElementById('userModal').classList.remove('open');
+};
+window.openUserModal = () => document.getElementById('userModal').classList.add('open');
+window.closeUserModal = (e) => {
+  if (e.target === document.getElementById('userModal'))
     document.getElementById('userModal').classList.remove('open');
-}
+};
 
 // ─── SECTION TOGGLE ──────────────────────────────────────────────────────────
-function toggleSection(id) {
+window.toggleSection = function(id) {
   const body = document.getElementById(id);
   const isOpen = body.classList.contains('open');
   const subs = { shopping: 'shopSub', calendar: 'calSub', dinner: 'dinnerSub', notes: 'notesSub' };
   body.classList.toggle('open', !isOpen);
   document.getElementById(subs[id]).textContent = isOpen ? 'Trykk for å åpne' : 'Trykk for å lukke';
-}
+};
 
-// ─── SHOPPING LIST ────────────────────────────────────────────────────────────
-async function addShopItem() {
+// ─── SHOPPING ────────────────────────────────────────────────────────────────
+window.addShopItem = async function() {
   const inp = document.getElementById('shopInput');
   const val = inp.value.trim();
   if (!val) return;
   state.shopping.push({ id: Date.now(), label: val, done: false, user: currentUser });
   inp.value = '';
   renderShopping();
-  await saveShared();
-}
-async function toggleShopItem(id) {
+  await saveToFirebase();
+};
+window.toggleShopItem = async function(id) {
   const item = state.shopping.find(i => i.id === id);
   if (item) item.done = !item.done;
   renderShopping();
-  await saveShared();
-}
-async function deleteShopItem(id) {
+  await saveToFirebase();
+};
+window.deleteShopItem = async function(id) {
   state.shopping = state.shopping.filter(i => i.id !== id);
   renderShopping();
-  await saveShared();
-}
-async function clearDoneShop() {
+  await saveToFirebase();
+};
+window.clearDoneShop = async function() {
   state.shopping = state.shopping.filter(i => !i.done);
   renderShopping();
-  await saveShared();
-}
+  await saveToFirebase();
+};
 function renderShopping() {
   const list = document.getElementById('shopList');
   const pending = state.shopping.filter(i => !i.done);
@@ -450,32 +384,30 @@ function renderShopping() {
   list.innerHTML = state.shopping.map(item => `
     <div class="shop-item">
       <div class="shop-cb ${item.done ? 'checked' : ''}" onclick="toggleShopItem(${item.id})"></div>
-      <div class="shop-label ${item.done ? 'done' : ''}">${escHtml(item.label)}</div>
-      <span class="user-tag" style="background:${USER_COLORS[item.user] || '#888'}">${item.user}</span>
+      <div class="shop-label ${item.done ? 'done' : ''}">${esc(item.label)}</div>
+      <span class="user-tag" style="background:${USER_COLORS[item.user]||'#888'}">${item.user}</span>
       <button class="shop-del" onclick="deleteShopItem(${item.id})">×</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 // ─── FOCUS MODE ──────────────────────────────────────────────────────────────
-function openFocusMode() { document.getElementById('focusOverlay').classList.add('open'); renderFocusList(); }
-function closeFocusMode() { document.getElementById('focusOverlay').classList.remove('open'); }
+window.openFocusMode = () => { document.getElementById('focusOverlay').classList.add('open'); renderFocusList(); };
+window.closeFocusMode = () => document.getElementById('focusOverlay').classList.remove('open');
 function renderFocusList() {
-  const list = document.getElementById('focusList');
   const items = state.shopping.filter(i => !i.done);
-  list.innerHTML = items.length === 0
+  document.getElementById('focusList').innerHTML = items.length === 0
     ? '<div style="color:var(--muted);text-align:center;padding:40px">Alt er handlet! 🎉</div>'
     : items.map(item => `
       <div class="focus-item" onclick="toggleShopItem(${item.id}).then(()=>renderFocusList())">
         <div class="focus-cb"></div>
-        <div class="focus-label">${escHtml(item.label)}</div>
-        <span class="user-tag" style="background:${USER_COLORS[item.user] || '#888'}">${item.user}</span>
-      </div>
-    `).join('');
+        <div class="focus-label">${esc(item.label)}</div>
+        <span class="user-tag" style="background:${USER_COLORS[item.user]||'#888'}">${item.user}</span>
+      </div>`).join('');
 }
+window.renderFocusList = renderFocusList;
 
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
-async function addCalEvent() {
+window.addCalEvent = async function() {
   const title = document.getElementById('calTitle').value.trim();
   const from = document.getElementById('calFrom').value;
   const time = document.getElementById('calTime').value;
@@ -488,29 +420,25 @@ async function addCalEvent() {
   });
   document.getElementById('calTitle').value = '';
   renderCalendar();
-  await saveShared();
+  await saveToFirebase();
   showToast('Hendelse lagt til! 📅');
-}
-async function deleteCalEvent(id) {
+};
+window.deleteCalEvent = async function(id) {
   state.calendar = state.calendar.filter(e => e.id !== id);
   renderCalendar();
-  await saveShared();
-}
-function toggleArchive() {
-  const arch = document.getElementById('archiveList');
-  arch.style.display = arch.style.display === 'none' ? 'block' : 'none';
-}
+  await saveToFirebase();
+};
+window.toggleArchive = function() {
+  archiveVisible = !archiveVisible;
+  document.getElementById('archiveList').style.display = archiveVisible ? 'block' : 'none';
+};
 function renderCalendar() {
   const now = new Date();
   state.calendar.forEach(ev => {
-    if (ev.from && ev.time) {
-      const dt = new Date(`${ev.from}T${ev.time}`);
-      if (dt < now) ev.archived = true;
-    }
+    if (ev.from && ev.time && new Date(`${ev.from}T${ev.time}`) < now) ev.archived = true;
   });
-  const active = state.calendar.filter(e => !e.archived).sort((a,b) =>
-    new Date(`${a.from}T${a.time}`) - new Date(`${b.from}T${b.time}`)
-  );
+  const active = state.calendar.filter(e => !e.archived)
+    .sort((a,b) => new Date(`${a.from}T${a.time}`) - new Date(`${b.from}T${b.time}`));
   const archived = state.calendar.filter(e => e.archived);
 
   document.getElementById('calList').innerHTML = active.length === 0
@@ -518,140 +446,134 @@ function renderCalendar() {
     : active.map(ev => `
       <div class="event-item">
         <div class="event-time-col">
-          <div class="event-date-label">${formatDate(ev.from)}</div>
-          <div class="event-time-label">${ev.time || ''}</div>
+          <div class="event-date-label">${fmtDate(ev.from)}</div>
+          <div class="event-time-label">${ev.time||''}</div>
         </div>
-        <div class="event-title">${escHtml(ev.title)}</div>
-        <span class="user-tag" style="background:${USER_COLORS[ev.user] || '#888'};font-size:11px">${ev.user}</span>
+        <div class="event-title">${esc(ev.title)}</div>
+        <span class="user-tag" style="background:${USER_COLORS[ev.user]||'#888'};font-size:11px">${ev.user}</span>
         <button class="event-del" onclick="deleteCalEvent(${ev.id})">×</button>
-      </div>
-    `).join('');
+      </div>`).join('');
 
   document.getElementById('archiveList').innerHTML = archived.length === 0
     ? '<div style="color:var(--muted);font-size:13px">Ingen arkiverte hendelser</div>'
     : archived.map(ev => `
       <div class="event-item" style="opacity:0.5">
         <div class="event-time-col">
-          <div class="event-date-label">${formatDate(ev.from)}</div>
-          <div class="event-time-label">${ev.time || ''}</div>
+          <div class="event-date-label">${fmtDate(ev.from)}</div>
+          <div class="event-time-label">${ev.time||''}</div>
         </div>
-        <div class="event-title" style="text-decoration:line-through">${escHtml(ev.title)}</div>
+        <div class="event-title" style="text-decoration:line-through">${esc(ev.title)}</div>
         <button class="event-del" onclick="deleteCalEvent(${ev.id})">×</button>
-      </div>
-    `).join('');
+      </div>`).join('');
 }
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T12:00:00');
+function fmtDate(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T12:00:00');
+  return `${'SønManTirOnsT orFreLør'.split('').filter((_,i)=>i%3===0).join('').match(/.{2}/g)[d.getDay()]} ${d.getDate()}.${d.getMonth()+1}`;
+}
+function fmtDate2(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T12:00:00');
   const days = ['Søn','Man','Tir','Ons','Tor','Fre','Lør'];
   return `${days[d.getDay()]} ${d.getDate()}.${d.getMonth()+1}`;
 }
 
 // ─── DINNER ──────────────────────────────────────────────────────────────────
-let currentWeekOffset = 0;
 function getWeekNumber(d) {
   const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
+  return Math.ceil((((date - new Date(Date.UTC(date.getUTCFullYear(),0,1)))/86400000)+1)/7);
 }
 function getMondayOfWeek(offset) {
   const now = new Date();
-  const day = now.getDay() || 7;
+  const day = now.getDay()||7;
   const monday = new Date(now);
-  monday.setDate(now.getDate() - day + 1 + offset * 7);
+  monday.setDate(now.getDate()-day+1+offset*7);
   monday.setHours(0,0,0,0);
   return monday;
 }
-function changeWeek(dir) { currentWeekOffset += dir; renderDinner(); }
-function getDinnerKey(date) {
-  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+window.changeWeek = function(dir) { currentWeekOffset += dir; renderDinner(); };
+function getDinnerKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function renderDinner() {
   const monday = getMondayOfWeek(currentWeekOffset);
   document.getElementById('weekLabel').textContent = `Uke ${getWeekNumber(monday)}`;
   const dayNames = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
-  let html = ''; let filled = 0;
+  let html = '', filled = 0;
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+    d.setDate(monday.getDate()+i);
     const key = getDinnerKey(d);
-    const val = state.dinner[key] || '';
+    const val = state.dinner[key]||'';
     if (val) filled++;
-    html += `
-      <div class="day-item">
-        <div class="day-label">${dayNames[i]} ${d.getDate()}.${d.getMonth()+1}</div>
-        <input class="day-inp" type="text" placeholder="Skriv inn middag"
-          value="${escHtml(val)}"
-          onchange="saveDinner('${key}', this.value)"
-          oninput="saveDinner('${key}', this.value)">
-      </div>`;
+    html += `<div class="day-item">
+      <div class="day-label">${dayNames[i]} ${d.getDate()}.${d.getMonth()+1}</div>
+      <input class="day-inp" type="text" placeholder="Skriv inn middag" value="${esc(val)}"
+        oninput="saveDinner('${key}', this.value)">
+    </div>`;
   }
   document.getElementById('dinnerDays').innerHTML = html;
   const badge = document.getElementById('dinnerBadge');
   badge.textContent = filled;
   badge.style.display = filled > 0 ? 'flex' : 'none';
 }
-let dinnerSaveTimer = null;
-function saveDinner(key, val) {
+window.saveDinner = function(key, val) {
   state.dinner[key] = val;
-  renderDinner();
-  // Debounce saves for dinner (typing)
   clearTimeout(dinnerSaveTimer);
-  dinnerSaveTimer = setTimeout(() => saveShared(), 1500);
-}
+  dinnerSaveTimer = setTimeout(saveToFirebase, 1500);
+  // Update badge
+  const monday = getMondayOfWeek(currentWeekOffset);
+  let filled = 0;
+  for (let i=0;i<7;i++) {
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    if (state.dinner[getDinnerKey(d)]) filled++;
+  }
+  const badge = document.getElementById('dinnerBadge');
+  badge.textContent = filled;
+  badge.style.display = filled > 0 ? 'flex' : 'none';
+};
 
 // ─── NOTES ────────────────────────────────────────────────────────────────────
-async function addNote() {
+window.addNote = async function() {
   const area = document.getElementById('noteArea');
   const text = area.value.trim();
   if (!text) return;
   state.notes.unshift({ id: Date.now(), text, user: currentUser, ts: new Date().toLocaleString('no') });
   area.value = '';
   renderNotes();
-  await saveShared();
+  await saveToFirebase();
   showToast('Notat lagret! 📝');
-}
-async function deleteNote(id) {
+};
+window.deleteNote = async function(id) {
   state.notes = state.notes.filter(n => n.id !== id);
   renderNotes();
-  await saveShared();
-}
+  await saveToFirebase();
+};
 function renderNotes() {
   document.getElementById('noteList').innerHTML = state.notes.map(n => `
     <div class="note-item">
       <div class="note-meta">
         <button class="note-del" onclick="deleteNote(${n.id})">×</button>
-        <span class="user-tag" style="background:${USER_COLORS[n.user] || '#888'};margin-right:6px">${n.user}</span>
+        <span class="user-tag" style="background:${USER_COLORS[n.user]||'#888'};margin-right:6px">${n.user}</span>
         ${n.ts}
       </div>
-      <div class="note-text">${escHtml(n.text)}</div>
-    </div>
-  `).join('');
+      <div class="note-text">${esc(n.text)}</div>
+    </div>`).join('');
 }
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-async function init() {
-  currentUser = loadLocalUser();
-  document.getElementById('calFrom').value = new Date().toISOString().slice(0,10);
-  renderUser();
-
-  await loadShared();
-  renderShopping();
-  renderCalendar();
-  renderDinner();
-  renderNotes();
-
-  // Poll every 15 seconds for changes from other family members
-  syncInterval = setInterval(pollForChanges, 15000);
-}
-
-init();
+try { currentUser = localStorage.getItem('familieapp_user') || 'Rino'; } catch(e){}
+document.getElementById('calFrom').value = new Date().toISOString().slice(0,10);
+document.getElementById('userBar').style.background = USER_COLORS[currentUser];
+document.getElementById('calUser').textContent = currentUser;
+document.getElementById('notesUser').textContent = currentUser;
+renderDinner();
 </script>
 </body>
 </html>
